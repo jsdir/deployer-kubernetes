@@ -14,9 +14,9 @@ dependencies:
         docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar; \
       else docker load -i ~/docker/dind-kubernetes.tar; fi
     - if [[ ! -e ~/docker/kubectl ]]; then \
-        wget -P /tmp https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.10.1/kubernetes.tar.gz
-        tar -zxvf /tmp/kubernetes.tar.gz
-        cp kubernetes/platforms/linux/amd64/kubectl ~/docker
+        wget -P /tmp https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.10.1/kubernetes.tar.gz \
+        tar -zxvf /tmp/kubernetes.tar.gz \
+        cp kubernetes/platforms/linux/amd64/kubectl ~/docker \
       fi
 
 test:
