@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/jsdir/deployer/pkg/resources"
@@ -24,7 +25,7 @@ type Kubernetes struct{}
 func (k *Kubernetes) Deploy(deploy *resources.Deploy) error {
 	// Get environment config.
 	config := KubernetesConfig{
-		ManifestGlob: "manifests/*.json",
+		ManifestGlob: "./manifests/*.json",
 		Cmd:          "kubectl",
 	}
 	err := mapstructure.Decode(deploy.EnvConfig, &config)
@@ -43,7 +44,7 @@ func (k *Kubernetes) Deploy(deploy *resources.Deploy) error {
 	// Execute commands in parallel.
 	count := len(templates)
 	if count == 0 {
-		log.Println("info: no templates found")
+		log.Println("Info: No templates found")
 		return nil
 	}
 
@@ -59,7 +60,7 @@ func (k *Kubernetes) Deploy(deploy *resources.Deploy) error {
 		err := <-sem
 		if err != nil {
 			log.Println(err)
-			return errors.New("could not run command")
+			return errors.New("Failed to run command")
 		}
 	}
 
@@ -78,7 +79,9 @@ func updateManifest(filename string, deploy *resources.Deploy, config *Kubernete
 		return err
 	}
 
-	cmd := exec.Command(config.Cmd, "update", "-f", "-")
+	log.Println("Running command:", config.Cmd)
+	args := append(strings.Split(config.Cmd, " "), "update", "-f", "-")
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	stdin, err := cmd.StdinPipe()

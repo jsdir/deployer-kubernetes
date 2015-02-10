@@ -1,0 +1,23 @@
+{
+  "id": "manifest2",
+  "kind": "Pod",
+  "apiVersion": "v1beta1",
+  "desiredState": {
+    "manifest": {
+      "version": "v1beta1",
+      "id": "manifest2",
+      "containers": [{
+        "name": "container2",
+        "image": "busybox"
+      }]
+    }
+  },
+  "labels": {
+    "changed": "{{.ChangedServices}}",
+    "configcmd": "{{.EnvConfig.Cmd}}",
+    "configmanifestglob": "{{.EnvConfig.ManifestGlob}}",
+    "envreleaseid": "{{.Env.ReleaseId}}",
+    "envupdated": "{{.Env.Updated}}",
+    "envdeployactive": "{{.Env.DeployActive}}",
+  }
+}
