@@ -7,10 +7,10 @@ dependencies:
     - "~/docker"
   override:
     - docker info
-    - if [[ -e ~/dind-kubernetes/image.tar ]]; then docker load -i ~/docker/dind-kubernetes.tar; fi
+    - if [[ -e ~/docker/dind-kubernetes.tar ]]; then docker load -i ~/docker/dind-kubernetes.tar; fi
     - docker pull llamashoes/dind-kubernetes
     - mkdir -p ~/docker; docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar
-    - if [[ -e ~/kube/image.tar ]]; then docker load -i ~/docker/kube.tar; fi
+    - if [[ -e ~/docker/kube.tar ]]; then docker load -i ~/docker/kube.tar; fi
     - docker pull fandekasp/kube
     - mkdir -p ~/docker; docker save fandekasp/kube > ~/docker/kube.tar
 
