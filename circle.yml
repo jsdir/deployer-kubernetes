@@ -1,3 +1,7 @@
 machine:
   services:
     - docker
+  pre:
+    - docker pull llamashoes/dind-kubernetes
+    - docker pull fandekasp/kube
+    - scripts/start-cluster.sh
