@@ -6,13 +6,17 @@ dependencies:
   cache_directories:
     - "~/docker"
   override:
+    - docker version
     - docker info
-    - if [[ -e ~/docker/dind-kubernetes.tar ]]; then docker load -i ~/docker/dind-kubernetes.tar; fi
-    - docker pull llamashoes/dind-kubernetes
-    - mkdir -p ~/docker; docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar
-    - if [[ -e ~/docker/kube.tar ]]; then docker load -i ~/docker/kube.tar; fi
-    - docker pull fandekasp/kube
-    - mkdir -p ~/docker; docker save fandekasp/kube > ~/docker/kube.tar
+    - mkdir -p ~/docker
+    - if [[ ! -e ~/docker/dind-kubernetes.tar ]]; then \
+        docker pull llamashoes/dind-kubernetes && \
+        docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar; \
+      else docker load -i ~/docker/dind-kubernetes.tar; fi
+    - if [[ ! -e ~/docker/kube.tar ]]; then \
+        docker pull fandekasp/kube && \
+        docker save fandekasp/kube > ~/docker/kube.tar; \
+      else docker load -i ~/docker/kube.tar; fi
 
 test:
   override:
