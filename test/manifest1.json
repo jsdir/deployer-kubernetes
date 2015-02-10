@@ -14,10 +14,5 @@
   },
   "labels": {
     "changed": "{{.ChangedServices}}",
-    "configcmd": "{{.EnvConfig.Cmd}}",
-    "configmanifestglob": "{{.EnvConfig.ManifestGlob}}",
-    "envreleaseid": "{{.Env.ReleaseId}}",
-    "envupdated": "{{.Env.Updated}}",
-    "envdeployactive": "{{.Env.DeployActive}}",
   }
 }
