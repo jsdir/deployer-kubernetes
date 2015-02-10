@@ -4,4 +4,4 @@ machine:
   post:
     - docker pull llamashoes/dind-kubernetes
     - docker pull fandekasp/kube
-    - scripts/start-cluster.sh
+    - ./scripts/start-cluster.sh
