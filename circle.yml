@@ -1,6 +1,8 @@
 machine:
   services:
     - docker
+  environment:
+    PATH: $HOME/docker:$PATH
 
 dependencies:
   cache_directories:
@@ -13,7 +15,10 @@ dependencies:
         docker pull llamashoes/dind-kubernetes && \
         docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar; \
       else docker load -i ~/docker/dind-kubernetes.tar; fi
-    - if [[ ! -e ~/docker/kubectl ]]; then wget -P /tmp https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.10.1/kubernetes.tar.gz && tar zxf /tmp/kubernetes.tar.gz -C /tmp && cp /tmp/kubernetes/platforms/linux/amd64/kubectl ~/docker; fi
+    - if [[ ! -e ~/docker/kubectl ]]; then \
+        wget -P /tmp https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.10.1/kubernetes.tar.gz && \
+        tar zxf /tmp/kubernetes.tar.gz -C /tmp && \
+        cp /tmp/kubernetes/platforms/linux/amd64/kubectl ~/docker; fi
 
 test:
   override:
