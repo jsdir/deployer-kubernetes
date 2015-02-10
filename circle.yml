@@ -10,11 +10,9 @@ dependencies:
   pre:
     - docker version
     - docker info
-    - mkdir -p ~/docker
-    - if [[ ! -e ~/docker/dind-kubernetes.tar ]]; then \
-        docker pull llamashoes/dind-kubernetes && \
-        docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar; \
-      else docker load -i ~/docker/dind-kubernetes.tar; fi
+    - if [[ -e ~/docker/dind-kubernetes.tar ]]; then docker load -i ~/docker/dind-kubernetes.tar; fi
+    - docker pull llamashoes/dind-kubernetes
+    - mkdir -p ~/docker; docker save llamashoes/dind-kubernetes > ~/docker/dind-kubernetes.tar
     - if [[ ! -e ~/docker/kubectl ]]; then \
         wget -P /tmp https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.10.1/kubernetes.tar.gz && \
         tar zxf /tmp/kubernetes.tar.gz -C /tmp && \
