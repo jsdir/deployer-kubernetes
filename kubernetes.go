@@ -2,11 +2,13 @@ package kubernetes
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -79,29 +81,58 @@ func updateManifest(filename string, deploy *resources.Deploy, config *Kubernete
 		return err
 	}
 
-	log.Println("Running command:", config.Cmd)
-	args := append(strings.Split(config.Cmd, " "), "update", "-f", "-")
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return err
+	runCmd := func(action string) ([]byte, error) {
+		log.Println("Running command:", config.Cmd, action)
+		args := append(strings.Split(config.Cmd, " "), action, "-f", "-")
+		cmd := exec.Command(args[0], args[1:]...)
+
+		// Attach pipes.
+		cmd.Stdout = os.Stdout
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			return nil, err
+		}
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			return nil, err
+		}
+
+		// Start command.
+		err = cmd.Start()
+		if err != nil {
+			return nil, err
+		}
+
+		err = tmpl.Execute(stdin, deploy)
+		if err != nil {
+			return nil, err
+		}
+
+		stdin.Close()
+		stderrData, err := ioutil.ReadAll(stderr)
+		if err != nil {
+			return nil, err
+		}
+
+		return stderrData, cmd.Wait()
 	}
 
-	err = cmd.Start()
-	if err != nil {
-		return err
-	}
+	// Run commands.
+	stderr, err := runCmd("create")
 
-	err = tmpl.Execute(stdin, deploy)
+	// Try updating if the resource already exists.
 	if err != nil {
-		return err
-	}
+		matched, matchErr := regexp.Match("already exists", stderr)
+		if matchErr == nil && matched {
+			updateStderr, updateErr := runCmd("update")
+			if updateErr != nil {
+				fmt.Println(string(updateStderr[:]))
+				return updateErr
+			}
+			return nil
+		}
 
-	stdin.Close()
-	err = cmd.Wait()
-	if err != nil {
+		fmt.Println(string(stderr[:]))
 		return err
 	}
 
