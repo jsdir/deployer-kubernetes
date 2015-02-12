@@ -124,10 +124,16 @@ func updateManifest(filename string, deploy *resources.Deploy, config *Kubernete
 	if err != nil {
 		matched, matchErr := regexp.Match("already exists", stderr)
 		if matchErr == nil && matched {
-			updateStderr, updateErr := runCmd("update")
-			if updateErr != nil {
-				fmt.Println(string(updateStderr[:]))
-				return updateErr
+			// Temporarily delete before create until ReplicationControllers are supported.
+			deleteStderr, deleteErr := runCmd("delete")
+			if deleteErr != nil {
+				fmt.Println(string(deleteStderr[:]))
+				return deleteErr
+			}
+			createStderr, createErr := runCmd("create")
+			if createErr != nil {
+				fmt.Println(string(createStderr[:]))
+				return createErr
 			}
 			return nil
 		}
